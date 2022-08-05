@@ -2,7 +2,7 @@ package main
 
 import (
 	cli "github.com/onecthree/concrete/cliparser"
-	// . "github.com/onecthree/concrete/typeof"
+	. "github.com/onecthree/concrete/typeof"
 	"os"
 	"fmt"
 )
@@ -17,12 +17,13 @@ func main() {
 
 	interf.Listen(func(args []string, lenArgs int) {
 		interf.Bind(args, map[string]func([]string) {
+			// command: concrete fusion create-project
 			"fusion": func(subArgs []string) {
-					interf.Bind(subArgs, map[string]func([]string) {
-						"create-project": func(subArgs []string) {
-							fmt.Println("fusion create-project");
-						},
-					});
+				interf.Bind(subArgs, map[string]func([]string) {
+					"create-project": func(subArgs []string) {
+						fmt.Println("fusion create-project");
+					},
+				}, ErrorHandler { "undefined": fusionUndefined, "empty": fusionEmpty });
 			},
 			"delete-project": func(subArgs []string) {
 				fmt.Println("delete-project");
@@ -30,7 +31,7 @@ func main() {
 			"version": func(subArgs []string) {
 				fmt.Println("concrete: self-package manager for Fusion. v1.0-b");
 			},
-		});
+		}, ErrorHandler { "undefined": fusionUndefined, "empty": fusionEmpty });
 	});
 
 	interf.Undefined(func() {
@@ -41,4 +42,13 @@ func main() {
 		fmt.Println("Perintah kosong");
 	});
 
+}
+
+
+func fusionUndefined() {
+	fmt.Println("fusion: Perintah tidak ditemukan");
+}
+
+func fusionEmpty() {
+	fmt.Println("fusion: Perintah kosong");
 }

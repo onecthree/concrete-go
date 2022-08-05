@@ -37,13 +37,21 @@ func (this *Cli) Listen(callback func([]string, int)) {
 	}
 }
 
-func (this *Cli) Bind(args []string, callback map[string]func([]string)) {
+func (this *Cli) Bind(args []string, callback map[string]func([]string), errorHandler map[string]func()) {
 	mainArgsList := this.parseMainArgs(callback);
 	this.undefinedArgs = true;
+
+	if(len(args) < 1) {
+		this.undefinedArgs = false;
+		errorHandler["empty"]();
+		return
+	}
 
 	if _, ok := mainArgsList[args[0]]; ok {
 		this.undefinedArgs = false;
 		callback[args[0]](args[1:]);
+	} else {
+		errorHandler["undefined"]();
 	}
 }
 
