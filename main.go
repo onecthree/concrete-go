@@ -21,12 +21,15 @@ func main() {
 			"fusion": func(subArgs []string) {
 				interf.Bind(subArgs, map[string]func([]string) {
 					"create-project": func(subArgs []string) {
-						fmt.Println("fusion create-project");
+						fmt.Println(subArgs);
 					},
 				}, ErrorHandler { "undefined": fusionUndefined, "empty": fusionEmpty });
 			},
 			"delete-project": func(subArgs []string) {
 				fmt.Println("delete-project");
+			},
+			"help": func(subArgs []string) {
+				fmt.Println("helper list");
 			},
 			"version": func(subArgs []string) {
 				fmt.Println("concrete: self-package manager for Fusion. v1.0-b");
@@ -35,11 +38,11 @@ func main() {
 	});
 
 	interf.Undefined(func() {
-		fmt.Println("Perintah tidak ditemukan")
+		fmt.Println("perintah tidak ditemukan")
 	});
 
 	interf.Empty(func() {
-		fmt.Println("Perintah kosong");
+		fmt.Println("perintah kosong");
 	});
 
 }

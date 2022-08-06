@@ -51,6 +51,7 @@ func (this *Cli) Bind(args []string, callback map[string]func([]string), errorHa
 		this.undefinedArgs = false;
 		callback[args[0]](args[1:]);
 	} else {
+		this.undefinedArgs = false;
 		errorHandler["undefined"]();
 	}
 }
