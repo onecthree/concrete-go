@@ -3,25 +3,27 @@ package cliparser
 import (
 	// . "github.com/onecthree/concrete/typeof"
 	// "fmt"
+	"github.com/onecthree/concrete/utils"
 )
 
 type Cli struct {
 	Debug			bool
-	trueArgsList	[]string
+	rootArgs		[]string
 	emptyArgs		bool
+	subOfPos		int
 	undefinedArgs	bool
 }
 
 func (this *Cli) UseArgs(args []string) {
 	if(len(args) > 1) {
 		this.emptyArgs = false;
-		this.trueArgsList = args[1:];
+		this.rootArgs = args[1:];
 	} else {
 		this.emptyArgs = true;
 	}
 }
 
-func (this *Cli) parseMainArgs(getTrueArgs map[string]func([]string)) map[string]bool {
+func (this *Cli) parseMainArgs(getTrueArgs map[string]func([]string, func(int)string)) map[string]bool {
 	result := make(map[string]bool);
 
 	for index, _ := range getTrueArgs {
@@ -33,15 +35,19 @@ func (this *Cli) parseMainArgs(getTrueArgs map[string]func([]string)) map[string
 
 func (this *Cli) Listen(callback func([]string, int)) {
 	if(!this.emptyArgs) {
-		callback(this.trueArgsList, len(this.trueArgsList));
+		callback(this.rootArgs, len(this.rootArgs));
 	}
 }
 
-func (this *Cli) Bind(args []string, callback map[string]func([]string), errorHandler map[string]func()) {
+func (this *Cli) bindContext(pos int) string {
+	return this.rootArgs[this.subOfPos + pos];
+}
+
+func (this *Cli) Bind(args []string, callback map[string]func([]string, func(int)string), errorHandler map[string]func()) {
 	mainArgsList := this.parseMainArgs(callback);
 	this.undefinedArgs = true;
 
-	if(len(args) < 1) {
+	if(len(args) < 2) {
 		this.undefinedArgs = false;
 		errorHandler["empty"]();
 		return
@@ -49,7 +55,9 @@ func (this *Cli) Bind(args []string, callback map[string]func([]string), errorHa
 
 	if _, ok := mainArgsList[args[0]]; ok {
 		this.undefinedArgs = false;
-		callback[args[0]](args[1:]);
+		ofPos := utils.GetIndex(this.rootArgs, args[0]);
+		this.subOfPos = ofPos;
+		callback[args[0]](args[1:], this.bindContext);
 	} else {
 		this.undefinedArgs = false;
 		errorHandler["undefined"]();

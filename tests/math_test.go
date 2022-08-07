@@ -1,14 +1,23 @@
 package math
 
 import "testing"
-import "reflect"
+// import "reflect"
+
+func GetIndex(slice []string, subject string) int {
+	for index, val := range slice {
+		if val == subject {
+            return index;
+        }
+	}
+
+	return -1
+}
 
 func TestDo(t *testing.T){
-    args := []string{"test", "hello"};
-    want := []string{"test", "hello"};
+    sliceDummy := []string{"foo", "bar", "foobar"};
 
-    if(!reflect.DeepEqual(args[:1], want)) {
-        t.Errorf("got: %q, want: %q", args[:1], want);
+    if(GetIndex(sliceDummy, "bar") == 1) {
+        t.Errorf("Error %q", GetIndex(sliceDummy, "bar"));
     }
 
 }
