@@ -1,4 +1,4 @@
-package cliparser
+package clipa
 
 import (
 	// . "github.com/onecthree/concrete/typeof"
