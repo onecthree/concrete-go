@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"embed"
 	"log"
+	"fmt"
 )
 
 func Path(root string, path string) string {
@@ -30,6 +31,8 @@ func NewFile(fileList [][]string) {
 			log.Fatal(err);
 		}
 
+		fmt.Println(val[0], "created");
+		
 		defer file.Close();
 	}
 }
@@ -37,5 +40,6 @@ func NewFile(fileList [][]string) {
 func NewDir(dirList []string) {
 	for _, val := range dirList {
 		os.MkdirAll(val, os.ModePerm);
+		fmt.Println(val, "created");
 	}
 }

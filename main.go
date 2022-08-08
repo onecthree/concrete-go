@@ -4,7 +4,11 @@ import (
 	cli "github.com/onecthree/concrete/clipa"
 	. "github.com/onecthree/concrete/typeof"
 	"github.com/onecthree/concrete/dirm"
+	"github.com/onecthree/concrete/utils"
+	"github.com/onecthree/concrete/system/pkgdl"
 	"os"
+	"os/exec"
+	"log"
 	"fmt"
 	"embed"
 )
@@ -23,7 +27,34 @@ func main() {
 
 	interf.Listen(func(args []string, lenArgs int) {
 		interf.Bind(args, map[string]func([]string, func(int)string) {
+			"install": func(subArgs []string, ctx func(int)string) {
+				if ctx(1) == "fusion" {
 
+					fusionPackage := pkgdl.PackageDl{}
+					fusionPackage.Filename("fusion.zip");
+					fusionPackage.PackageUri("http://onecthr.ee/fusion.zip");
+					fusionPackage.Download(func() {
+						err := utils.Unzip("fusion.zip", "fusion");
+
+						if err != nil {
+							log.Fatal(err);
+						}
+
+						fmt.Println("fuzion.zip extracted");
+						fmt.Println("Installing fusion extension");
+
+						cmd, err := exec.Command("bash", "-c", "cd fusion && ./build").Output()
+					
+						if err != nil {
+						fmt.Printf("error %s", err)
+						}
+						
+						output := string(cmd)
+						fmt.Println(output)
+						
+					});
+				}
+			},
 			"fusion": func(subArgs []string, ctx func(int)string) {
 				interf.Bind(subArgs, map[string]func([]string, func(int)string) {
 					"create-project": func(subArgs []string, ctx func(int)string) {
@@ -36,13 +67,15 @@ func main() {
 							dirm.Path(rootPath, "public"),
 							dirm.Path(rootPath, "storage"),
 							dirm.Path(rootPath, "routes"),
-						});
+							dirm.Path(rootPath, "storage/app"),
+							dirm.Path(rootPath, "storage/fusion/cache"),
+						});	
 
 						dirm.NewFile([][]string{
-							[]string{dirm.Path(rootPath, "routes/web.php"), dirm.Embed(emb, "embed/fusion/starter/routes.php")},
+							[]string{dirm.Path(rootPath, "public/index.php"), dirm.Embed(emb, "embed/fusion/starter/public/index.php")},
+							[]string{dirm.Path(rootPath, "routes/web.php"), dirm.Embed(emb, "embed/fusion/starter/routes/routes.php")},
+							[]string{dirm.Path(rootPath, "app/Controllers/IndexController.php"), dirm.Embed(emb, "embed/fusion/starter/app/Controllers/IndexController.php")},
 						});
-					},
-					"test": func(subArgs []string, ctx func(int)string) {
 
 					},
 				}, ErrorHandler { "undefined": fusionUndefined, "empty": fusionEmpty });
