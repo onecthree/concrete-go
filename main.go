@@ -1,13 +1,13 @@
 package main
 
 import (
-	cli "github.com/onecthree/concrete/clipa"
+	"github.com/onecthree/concrete/clipa"
 	. "github.com/onecthree/concrete/typeof"
 	"github.com/onecthree/concrete/dirm"
 	"github.com/onecthree/concrete/utils"
 	"github.com/onecthree/concrete/system/pkgdl"
+	"github.com/onecthree/concrete/system/cmdinf"
 	"os"
-	"os/exec"
 	"log"
 	"fmt"
 	"embed"
@@ -17,22 +17,26 @@ import (
 
 var emb embed.FS
 
-var interf = cli.Cli{
-	Debug: false,
+var cli = clipa.Init{
+	UseArgs	: os.Args,
+	Debug	: false,
 }
 
 func main() {
 
-	interf.UseArgs(os.Args);
+	// defer cli.Undefined(func() { fmt.Println("concrete: perintah undefined") });
+	// defer cli.Empty(func() { fmt.Println("concrete: perintah kosong") });
 
-	interf.Listen(func(args []string, lenArgs int) {
-		interf.Bind(args, map[string]func([]string, func(int)string) {
+	cli.On(func(args []string, lenArgs int) {
+
+		cli.Bind(args, map[string]func([]string, func(int)string) {
 			"install": func(subArgs []string, ctx func(int)string) {
-				if ctx(1) == "fusion" {
 
+				if ctx(1) == "fusion" {
 					fusionPackage := pkgdl.PackageDl{}
 					fusionPackage.Filename("fusion.zip");
 					fusionPackage.PackageUri("http://onecthr.ee/fusion.zip");
+					fmt.Println("fusion.zip downloaded")
 					fusionPackage.Download(func() {
 						err := utils.Unzip("fusion.zip", "fusion");
 
@@ -43,20 +47,14 @@ func main() {
 						fmt.Println("fuzion.zip extracted");
 						fmt.Println("Installing fusion extension");
 
-						cmd, err := exec.Command("bash", "-c", "cd fusion && ./build").Output()
-					
-						if err != nil {
-						fmt.Printf("error %s", err)
-						}
-						
-						output := string(cmd)
-						fmt.Println(output)
-						
+						cmdinf.Exec("cd fusion && ./build");
+
 					});
 				}
+
 			},
 			"fusion": func(subArgs []string, ctx func(int)string) {
-				interf.Bind(subArgs, map[string]func([]string, func(int)string) {
+				cli.Bind(subArgs, map[string]func([]string, func(int)string) {
 					"create-project": func(subArgs []string, ctx func(int)string) {
 						rootPath := ctx(1);
 
@@ -81,24 +79,21 @@ func main() {
 				}, ErrorHandler { "undefined": fusionUndefined, "empty": fusionEmpty });
 			},
 
-		}, ErrorHandler { "undefined": fusionUndefined, "empty": fusionEmpty });
+		}, ErrorHandler{
+			"undefined": func() {
+				fmt.Println("concrete: undefined");
+			},
+			"empty": func() {
+				fmt.Println("concrete: empty");
+			}});
 	});
-
-	interf.Undefined(func() {
-		fmt.Println("perintah tidak ditemukan")
-	});
-
-	interf.Empty(func() {
-		fmt.Println("perintah kosong");
-	});
-
 }
 
 
 func fusionUndefined() {
-	fmt.Println("fusion: Perintah tidak ditemukan");
+	fmt.Println("concrete: Perintah tidak ditemukan");
 }
 
 func fusionEmpty() {
-	fmt.Println("fusion: Perintah kosong");
+	fmt.Println("concrete: Perintah kosong");
 }

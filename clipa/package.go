@@ -3,27 +3,20 @@ package clipa
 import (
 	// . "github.com/onecthree/concrete/typeof"
 	// "fmt"
+	"log"
 	"github.com/onecthree/concrete/utils"
 )
 
-type Cli struct {
+type Init struct {
 	Debug			bool
+	UseArgs			[]string
 	rootArgs		[]string
 	emptyArgs		bool
 	subOfPos		int
 	undefinedArgs	bool
 }
 
-func (this *Cli) UseArgs(args []string) {
-	if(len(args) > 1) {
-		this.emptyArgs = false;
-		this.rootArgs = args[1:];
-	} else {
-		this.emptyArgs = true;
-	}
-}
-
-func (this *Cli) parseMainArgs(getTrueArgs map[string]func([]string, func(int)string)) map[string]bool {
+func (this *Init) parseMainArgs(getTrueArgs map[string]func([]string, func(int)string)) map[string]bool {
 	result := make(map[string]bool);
 
 	for index, _ := range getTrueArgs {
@@ -33,27 +26,35 @@ func (this *Cli) parseMainArgs(getTrueArgs map[string]func([]string, func(int)st
 	return result;
 }
 
-func (this *Cli) Listen(callback func([]string, int)) {
-	if(!this.emptyArgs) {
-		callback(this.rootArgs, len(this.rootArgs));
+func (this *Init) On(callback func([]string, int)) {
+	this.undefinedArgs = true;
+	this.emptyArgs = true;
+
+	if(len(this.UseArgs) > 1) {
+		this.emptyArgs = false;
+		this.rootArgs = this.UseArgs[1:];
 	}
+
+	// if(!this.emptyArgs) {
+	callback(this.rootArgs, len(this.rootArgs));
+	// }
 }
 
-func (this *Cli) bindContext(pos int) string {
+func (this *Init) bindContext(pos int) string {
 	return this.rootArgs[this.subOfPos + pos];
 }
 
-func (this *Cli) Bind(args []string, callback map[string]func([]string, func(int)string), errorHandler map[string]func()) {
+func (this *Init) Bind(args []string, callback map[string]func([]string, func(int)string), errorHandler map[string]func()) {
 	mainArgsList := this.parseMainArgs(callback);
-	this.undefinedArgs = true;
 
-	if(len(args) < 2) {
+	if(len(args) < 1) {
 		this.undefinedArgs = false;
 		errorHandler["empty"]();
 		return
 	}
 
 	if _, ok := mainArgsList[args[0]]; ok {
+		log.Println(args[0]);
 		this.undefinedArgs = false;
 		ofPos := utils.GetIndex(this.rootArgs, args[0]);
 		this.subOfPos = ofPos;
@@ -64,13 +65,17 @@ func (this *Cli) Bind(args []string, callback map[string]func([]string, func(int
 	}
 }
 
-func (this *Cli) Undefined(callback func()) {
-	if(this.undefinedArgs) {
+func (this *Init) RetUndefined() {
+	this.undefinedArgs = false;
+}
+
+func (this *Init) Undefined(callback func()) {
+	if(this.undefinedArgs && !this.emptyArgs) {
 		callback();
 	}
 }
 
-func (this *Cli) Empty(callback func()) {
+func (this *Init) Empty(callback func()) {
 	if(this.emptyArgs) {
 		callback();
 	}

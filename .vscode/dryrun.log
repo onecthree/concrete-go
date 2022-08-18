@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/onecthree/Projects/concrete'
+make: Leaving directory '/home/onecthree/Projects/concrete'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+
