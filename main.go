@@ -7,8 +7,8 @@ import (
 	"github.com/onecthree/concrete/utils"
 	"github.com/onecthree/concrete/system/pkgdl"
 	"github.com/onecthree/concrete/system/cmdinf"
-	"os"
 	"log"
+	"os"
 	"fmt"
 	"embed"
 )
@@ -28,6 +28,20 @@ func main() {
 	// defer cli.Empty(func() { fmt.Println("concrete: perintah kosong") });
 
 	cli.On(func(args []string, lenArgs int) {
+
+		// defer cli.Undefined(func() {
+		// 	fmt.Println("only: undefined");
+		// });
+
+		// defer cli.Empty(func() {
+		// 	fmt.Println("only: empty");
+		// });
+
+		// if(args[0] == "hello") {
+		// 	fmt.Println("INI HELLO GUYS");
+			
+		// 	cli.Pass();
+		// }
 
 		cli.Bind(args, map[string]func([]string, func(int)string) {
 			"install": func(subArgs []string, ctx func(int)string) {
@@ -81,11 +95,13 @@ func main() {
 
 		}, ErrorHandler{
 			"undefined": func() {
-				fmt.Println("concrete: undefined");
+				fmt.Println("master: undefined");
 			},
 			"empty": func() {
-				fmt.Println("concrete: empty");
-			}});
+				fmt.Println("master: empty");
+			},
+		});
+
 	});
 }
 

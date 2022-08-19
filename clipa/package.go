@@ -65,7 +65,7 @@ func (this *Init) Bind(args []string, callback map[string]func([]string, func(in
 	}
 }
 
-func (this *Init) RetUndefined() {
+func (this *Init) Pass() {
 	this.undefinedArgs = false;
 }
 
