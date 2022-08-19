@@ -29,20 +29,6 @@ func main() {
 
 	cli.On(func(args []string, lenArgs int) {
 
-		// defer cli.Undefined(func() {
-		// 	fmt.Println("only: undefined");
-		// });
-
-		// defer cli.Empty(func() {
-		// 	fmt.Println("only: empty");
-		// });
-
-		// if(args[0] == "hello") {
-		// 	fmt.Println("INI HELLO GUYS");
-			
-		// 	cli.Pass();
-		// }
-
 		cli.Bind(args, map[string]func([]string, func(int)string) {
 			"install": func(subArgs []string, ctx func(int)string) {
 
