@@ -1,2 +1,2 @@
 # concrete
-Self-package manager for Fusion. See [https://github.com/onecthree/fusion](https://github.com/onecthree/fusion)
+Self-package manager for Fusion [archived]. See [https://github.com/onecthree/concrete](https://github.com/onecthree/concrete)
